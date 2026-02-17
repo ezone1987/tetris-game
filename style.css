@@ -1,0 +1,586 @@
+/* 俄罗斯方块 - 样式文件 */
+/* Digital Materialism 设计哲学：像素作为物理实体 */
+
+/* CSS重置和基础样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* 主色调 - 太空/科技主题 */
+    --color-primary: #0f3460;
+    --color-secondary: #00adb5;
+    --color-accent: #4ecdc4;
+    --color-dark: #16213e;
+    --color-light: #e1f5fe;
+    --color-danger: #ff5722;
+    --color-success: #4caf50;
+    --color-warning: #ff9800;
+    --color-info: #2196f3;
+
+    /* 字体 */
+    --font-title: 'Orbitron', sans-serif;
+    --font-body: 'Exo 2', sans-serif;
+
+    /* 阴影 */
+    --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-medium: 0 6px 12px rgba(0, 0, 0, 0.15);
+    --shadow-heavy: 0 10px 20px rgba(0, 0, 0, 0.2);
+    --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    /* 过渡 */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+}
+
+body {
+    font-family: var(--font-body);
+    background: linear-gradient(135deg, var(--color-dark) 0%, var(--color-primary) 100%);
+    color: var(--color-light);
+    min-height: 100vh;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 头部样式 */
+.game-header {
+    text-align: center;
+    padding: 30px 20px;
+    margin-bottom: 30px;
+    background: linear-gradient(90deg,
+        rgba(15, 52, 96, 0.9) 0%,
+        rgba(78, 205, 196, 0.9) 50%,
+        rgba(0, 173, 181, 0.9) 100%);
+    border-radius: 20px;
+    box-shadow: var(--shadow-heavy);
+    position: relative;
+    overflow: hidden;
+}
+
+.game-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg,
+        var(--color-accent) 0%,
+        var(--color-secondary) 50%,
+        var(--color-accent) 100%);
+    z-index: 1;
+}
+
+.game-header h1 {
+    font-family: var(--font-title);
+    font-size: 3.5rem;
+    font-weight: 900;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(45deg, var(--color-light) 30%, var(--color-accent) 70%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.game-header .subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    font-weight: 300;
+}
+
+/* 游戏主区域 */
+.game-main {
+    display: grid;
+    grid-template-columns: 250px 1fr 250px;
+    gap: 30px;
+    margin-bottom: 40px;
+    flex: 1;
+}
+
+@media (max-width: 1200px) {
+    .game-main {
+        grid-template-columns: 200px 1fr 200px;
+    }
+}
+
+@media (max-width: 992px) {
+    .game-main {
+        grid-template-columns: 180px 1fr 180px;
+    }
+}
+
+@media (max-width: 768px) {
+    .game-main {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr auto;
+        gap: 20px;
+    }
+}
+
+/* 信息面板通用样式 */
+.info-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.info-section {
+    background: rgba(22, 33, 62, 0.8);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: var(--shadow-medium);
+    border: 1px solid rgba(78, 205, 196, 0.3);
+    transition: var(--transition-normal);
+    backdrop-filter: blur(10px);
+}
+
+.info-section:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-heavy);
+    border-color: var(--color-accent);
+}
+
+.info-section h3 {
+    font-family: var(--font-title);
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    color: var(--color-accent);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.info-section h3 i {
+    font-size: 1.2rem;
+}
+
+/* 预览容器 */
+.preview-container {
+    background: rgba(15, 52, 96, 0.6);
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid var(--color-secondary);
+    box-shadow: var(--shadow-inner);
+}
+
+/* 统计网格 */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 15px 10px;
+    background: rgba(0, 173, 181, 0.2);
+    border-radius: 10px;
+    border: 1px solid rgba(78, 205, 196, 0.4);
+    transition: var(--transition-fast);
+}
+
+.stat-item:hover {
+    background: rgba(0, 173, 181, 0.3);
+    transform: scale(1.05);
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stat-value {
+    font-family: var(--font-title);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* 游戏画布区域 */
+.game-canvas-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+}
+
+.canvas-wrapper {
+    position: relative;
+    background: rgba(22, 33, 62, 0.9);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: var(--shadow-heavy);
+    border: 3px solid var(--color-secondary);
+    overflow: hidden;
+}
+
+.canvas-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg,
+        transparent 0%,
+        rgba(78, 205, 196, 0.1) 50%,
+        transparent 100%);
+    pointer-events: none;
+}
+
+#game-canvas {
+    display: block;
+    background: rgba(15, 52, 96, 0.8);
+    border-radius: 8px;
+    box-shadow: var(--shadow-inner);
+}
+
+/* 游戏覆盖层 */
+.game-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 52, 96, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+    z-index: 10;
+}
+
+.overlay-content {
+    text-align: center;
+    padding: 40px;
+    max-width: 500px;
+}
+
+.overlay-content h2 {
+    font-family: var(--font-title);
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: var(--color-accent);
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.overlay-content p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    opacity: 0.9;
+}
+
+/* 按钮样式 */
+.btn {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: var(--shadow-medium);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.2) 50%,
+        transparent 100%);
+    transition: var(--transition-normal);
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-accent) 100%);
+    color: var(--color-light);
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-heavy);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--color-success) 0%, #66bb6a 100%);
+    color: var(--color-light);
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, var(--color-warning) 0%, #ffb74d 100%);
+    color: var(--color-dark);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--color-danger) 0%, #ff8a65 100%);
+    color: var(--color-light);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #757575 0%, #9e9e9e 100%);
+    color: var(--color-light);
+}
+
+/* 游戏控制按钮 */
+.game-controls {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.game-controls .btn {
+    min-width: 120px;
+}
+
+/* 分数显示 */
+.score-display {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.score-item {
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(135deg,
+        rgba(0, 173, 181, 0.2) 0%,
+        rgba(78, 205, 196, 0.2) 100%);
+    border-radius: 10px;
+    border: 2px solid var(--color-secondary);
+}
+
+.score-label {
+    font-size: 1rem;
+    opacity: 0.8;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.score-value {
+    font-family: var(--font-title);
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--color-accent);
+    text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* 控制说明 */
+.controls-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.control-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: rgba(15, 52, 96, 0.5);
+    border-radius: 8px;
+    border-left: 4px solid var(--color-accent);
+    transition: var(--transition-fast);
+}
+
+.control-item:hover {
+    background: rgba(15, 52, 96, 0.7);
+    transform: translateX(5px);
+}
+
+.control-key {
+    font-family: var(--font-title);
+    font-weight: 700;
+    color: var(--color-accent);
+    background: rgba(0, 0, 0, 0.3);
+    padding: 5px 10px;
+    border-radius: 5px;
+    min-width: 70px;
+    text-align: center;
+}
+
+.control-desc {
+    flex: 1;
+    text-align: right;
+    font-size: 0.95rem;
+}
+
+/* 页脚样式 */
+.game-footer {
+    margin-top: auto;
+    background: rgba(22, 33, 62, 0.9);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: var(--shadow-medium);
+    border-top: 3px solid var(--color-secondary);
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+@media (max-width: 768px) {
+    .footer-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+.footer-section {
+    text-align: center;
+}
+
+.footer-section h4 {
+    font-family: var(--font-title);
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    color: var(--color-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.footer-section p {
+    font-size: 0.95rem;
+    opacity: 0.8;
+    line-height: 1.6;
+}
+
+.copyright {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid rgba(78, 205, 196, 0.3);
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+/* 动画效果 */
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glow {
+    0%, 100% { box-shadow: 0 0 10px var(--color-accent); }
+    50% { box-shadow: 0 0 20px var(--color-accent), 0 0 30px var(--color-secondary); }
+}
+
+/* 移动端优化 */
+@media (max-width: 480px) {
+    .container {
+        padding: 10px;
+    }
+
+    .game-header h1 {
+        font-size: 2.5rem;
+    }
+
+    .game-header .subtitle {
+        font-size: 1rem;
+    }
+
+    .game-controls {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .game-controls .btn {
+        width: 100%;
+    }
+
+    .stat-value, .score-value {
+        font-size: 1.8rem;
+    }
+
+    .canvas-wrapper {
+        padding: 10px;
+    }
+
+    #game-canvas {
+        width: 100%;
+        height: auto;
+    }
+}
+
+/* 打印样式 */
+@media print {
+    .game-controls,
+    .game-overlay,
+    .info-section:hover {
+        display: none;
+    }
+
+    body {
+        background: white;
+        color: black;
+    }
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+    :root {
+        --color-primary: #000000;
+        --color-secondary: #00ffff;
+        --color-accent: #ffff00;
+        --color-dark: #000033;
+        --color-light: #ffffff;
+    }
+}
+
+/* 减少动画模式 */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

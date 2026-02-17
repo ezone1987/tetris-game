@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>俄罗斯方块 - 经典HTML5游戏</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧊</text></svg>">
+</head>
+<body>
+    <div class="container">
+        <header class="game-header">
+            <h1><i class="fas fa-cubes"></i> 俄罗斯方块</h1>
+            <p class="subtitle">经典益智游戏 · Digital Materialism 设计</p>
+        </header>
+
+        <main class="game-area">
+            <!-- 游戏主区域 -->
+            <div class="game-main">
+                <div class="info-panel left-panel">
+                    <!-- 保持方块区域 -->
+                    <div class="info-section hold-section">
+                        <h3><i class="fas fa-box"></i> 保持方块</h3>
+                        <div class="preview-container">
+                            <canvas id="hold-canvas" width="120" height="120"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 游戏统计 -->
+                    <div class="info-section stats-section">
+                        <h3><i class="fas fa-chart-bar"></i> 游戏统计</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-label">等级</div>
+                                <div class="stat-value" id="level">1</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">行数</div>
+                                <div class="stat-value" id="lines">0</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">速度</div>
+                                <div class="stat-value" id="speed">1x</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 游戏画布区域 -->
+                <div class="game-canvas-section">
+                    <div class="canvas-wrapper">
+                        <canvas id="game-canvas" width="300" height="600"></canvas>
+                        <!-- 游戏状态覆盖层 -->
+                        <div class="game-overlay" id="game-overlay">
+                            <div class="overlay-content">
+                                <h2 id="overlay-title">俄罗斯方块</h2>
+                                <p id="overlay-text">准备好开始游戏了吗？</p>
+                                <button id="overlay-button" class="btn btn-primary">
+                                    <i class="fas fa-play"></i> 开始游戏
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 游戏控制按钮 -->
+                    <div class="game-controls">
+                        <button id="start-btn" class="btn btn-success">
+                            <i class="fas fa-play"></i> 开始
+                        </button>
+                        <button id="pause-btn" class="btn btn-warning">
+                            <i class="fas fa-pause"></i> 暂停
+                        </button>
+                        <button id="reset-btn" class="btn btn-danger">
+                            <i class="fas fa-redo"></i> 重置
+                        </button>
+                        <button id="sound-btn" class="btn btn-secondary">
+                            <i class="fas fa-volume-up"></i> 声音
+                        </button>
+                    </div>
+                </div>
+
+                <div class="info-panel right-panel">
+                    <!-- 下一方块预览 -->
+                    <div class="info-section next-section">
+                        <h3><i class="fas fa-eye"></i> 下一方块</h3>
+                        <div class="preview-container">
+                            <canvas id="next-canvas" width="120" height="120"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 分数显示 -->
+                    <div class="info-section score-section">
+                        <h3><i class="fas fa-trophy"></i> 分数</h3>
+                        <div class="score-display">
+                            <div class="score-item">
+                                <div class="score-label">当前分数</div>
+                                <div class="score-value" id="score">0</div>
+                            </div>
+                            <div class="score-item">
+                                <div class="score-label">最高分</div>
+                                <div class="score-value" id="high-score">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 控制说明 -->
+                    <div class="info-section controls-section">
+                        <h3><i class="fas fa-gamepad"></i> 控制说明</h3>
+                        <div class="controls-list">
+                            <div class="control-item">
+                                <span class="control-key">← →</span>
+                                <span class="control-desc">左右移动</span>
+                            </div>
+                            <div class="control-item">
+                                <span class="control-key">↑ / Z / X</span>
+                                <span class="control-desc">旋转方块</span>
+                            </div>
+                            <div class="control-item">
+                                <span class="control-key">↓</span>
+                                <span class="control-desc">加速下落</span>
+                            </div>
+                            <div class="control-item">
+                                <span class="control-key">空格</span>
+                                <span class="control-desc">硬降落</span>
+                            </div>
+                            <div class="control-item">
+                                <span class="control-key">C</span>
+                                <span class="control-desc">保持方块</span>
+                            </div>
+                            <div class="control-item">
+                                <span class="control-key">P / ESC</span>
+                                <span class="control-desc">暂停游戏</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="game-footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-info-circle"></i> 游戏说明</h4>
+                    <p>将下落的方块组合成完整的行来消除得分。消除的行数越多，得分越高。随着等级提高，方块下落速度会加快。</p>
+                </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-code"></i> 技术信息</h4>
+                    <p>使用 HTML5 Canvas + CSS3 + JavaScript 开发。基于 Digital Materialism 设计哲学，追求像素的物理质感和空间深度。</p>
+                </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-mobile-alt"></i> 移动端支持</h4>
+                    <p>支持触摸控制，在手机和平板上也能流畅游玩。建议在横屏模式下获得最佳体验。</p>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>© 2026 俄罗斯方块游戏 | 基于 snake_game 项目架构</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 游戏脚本 -->
+    <script src="tetromino.js"></script>
+    <script src="audio.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
