@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ==================== 初始化函数 ====================
     async function init() {
-        console.log('初始化俄罗斯方块游戏...');
+        // console.log('初始化俄罗斯方块游戏...');
 
         // 获取Canvas元素
         canvas = document.getElementById('game-canvas');
@@ -109,8 +109,10 @@ document.addEventListener('DOMContentLoaded', () => {
         overlayText = document.getElementById('overlay-text');
         overlayButton = document.getElementById('overlay-button');
 
-        // 初始化方块工厂
-        gameState.pieceFactory = new Tetromino.TetrominoFactory();
+        // 初始化方块工厂（传递碰撞检测函数）
+        gameState.pieceFactory = new Tetromino.TetrominoFactory((piece) => {
+            return !checkCollision(piece);
+        });
 
         // 加载最高分
         loadHighScore();
@@ -132,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 显示开始界面
         showOverlay('俄罗斯方块', '准备好开始游戏了吗？', '开始游戏');
 
-        console.log('游戏初始化完成');
+        // console.log('游戏初始化完成');
     }
 
     // ==================== 游戏控制函数 ====================
@@ -158,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 开始游戏循环
         requestAnimationFrame(gameLoop);
 
-        console.log('游戏开始');
+        // console.log('游戏开始');
     }
 
     function pauseGame() {
@@ -177,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         updateButtonStates();
-        console.log(`游戏${gameState.isPaused ? '暂停' : '继续'}`);
+        // console.log(`游戏${gameState.isPaused ? '暂停' : '继续'}`);
     }
 
     function resetGame() {
@@ -196,8 +198,10 @@ document.addEventListener('DOMContentLoaded', () => {
         gameState.gameOver = false;
         gameState.dropInterval = CONFIG.INITIAL_SPEED;
 
-        // 重置方块工厂
-        gameState.pieceFactory = new Tetromino.TetrominoFactory();
+        // 重置方块工厂（传递碰撞检测函数）
+        gameState.pieceFactory = new Tetromino.TetrominoFactory((piece) => {
+            return !checkCollision(piece);
+        });
 
         // 更新UI
         updateUI();
@@ -208,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showOverlay('俄罗斯方块', '准备好开始游戏了吗？', '开始游戏');
 
         updateButtonStates();
-        console.log('游戏重置');
+        // console.log('游戏重置');
     }
 
     // ==================== 方块管理函数 ====================
@@ -236,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 绘制下一个方块预览
         drawNextPiece();
 
-        console.log(`生成新方块: ${gameState.currentPiece.type}`);
+        // console.log(`生成新方块: ${gameState.currentPiece.type}`);
     }
 
     function holdPiece() {
@@ -263,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 绘制保持方块
         drawHoldPiece();
 
-        console.log(`保持方块: ${gameState.holdPiece.type}`);
+        // console.log(`保持方块: ${gameState.holdPiece.type}`);
     }
 
     // ==================== 游戏逻辑函数 ====================
@@ -352,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 生成新方块
         spawnNewPiece();
 
-        console.log(`方块锁定，消除 ${linesCleared} 行`);
+        // console.log(`方块锁定，消除 ${linesCleared} 行`);
     }
 
     function clearLines() {
@@ -741,7 +745,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         updateUI();
 
-        console.log(`得分: +${scoreIncrease} (${linesCleared}行, ${gameState.combo}连击, ${levelMultiplier}级加成)`);
+        // console.log(`得分: +${scoreIncrease} (${linesCleared}行, ${gameState.combo}连击, ${levelMultiplier}级加成)`);
     }
 
     function checkLevelUp() {
@@ -760,7 +764,7 @@ document.addEventListener('DOMContentLoaded', () => {
             AudioManager.playLevelUp();
 
             updateUI();
-            console.log(`升级到 ${gameState.level} 级，下落间隔: ${gameState.dropInterval}ms`);
+            // console.log(`升级到 ${gameState.level} 级，下落间隔: ${gameState.dropInterval}ms`);
         }
     }
 
@@ -782,7 +786,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 保存游戏统计
         saveGameStats();
 
-        console.log(`游戏结束，分数: ${gameState.score}, 行数: ${gameState.lines}, 等级: ${gameState.level}`);
+        // console.log(`游戏结束，分数: ${gameState.score}, 行数: ${gameState.lines}, 等级: ${gameState.level}`);
     }
 
     // ==================== 本地存储函数 ====================
@@ -826,7 +830,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==================== UI辅助函数 ====================
     function showOverlay(title, text, buttonText) {
         overlayTitle.textContent = title;
-        overlayText.innerHTML = text;
+        // 将<br>标签转换为换行符，使用textContent避免XSS
+        const safeText = text.replace(/<br\s*\/?>/gi, '\n');
+        overlayText.textContent = safeText;
+        // 添加CSS以保留换行
+        overlayText.style.whiteSpace = 'pre-line';
         overlayButton.innerHTML = `<i class="fas fa-play"></i> ${buttonText}`;
         gameOverlay.style.display = 'flex';
     }
@@ -941,6 +949,42 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==================== 启动游戏 ====================
+
+    // 开发模式下的自检函数
+    window.testWallKick = function() {
+        console.log('=== 墙踢检测测试 ===');
+        const factory = new Tetromino.TetrominoFactory((piece) => {
+            // 简单的碰撞检测：检查是否在网格边界内
+            const cells = piece.getCells();
+            for (const cell of cells) {
+                if (cell.x < 0 || cell.x >= CONFIG.GRID_WIDTH || cell.y >= CONFIG.GRID_HEIGHT) {
+                    return false;
+                }
+            }
+            return true;
+        });
+
+        const piece = factory.next();
+        console.log('测试方块:', piece.type);
+
+        // 测试旋转
+        const result = piece.rotate();
+        console.log('旋转结果:', result);
+
+        if (result.success) {
+            console.log('✅ 墙踢检测基本功能正常');
+        } else {
+            console.log('⚠️ 旋转失败（可能正常，取决于位置）');
+        }
+
+        return result;
+    };
+
+    // 可选：在开发环境中自动运行测试
+    // if (window.location.href.includes('localhost')) {
+    //     setTimeout(() => testWallKick(), 1000);
+    // }
+
     init().catch(error => console.error('游戏初始化失败:', error));
 
 });

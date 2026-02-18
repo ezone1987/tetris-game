@@ -243,7 +243,7 @@ window.AudioManager = (() => {
                 masterGain.gain.value = this.enabled ? this.volume : 0;
 
                 this.initialized = true;
-                console.log('音频系统初始化成功');
+                // console.log('音频系统初始化成功');
             } catch (error) {
                 console.error('音频系统初始化失败:', error);
                 this.enabled = false;

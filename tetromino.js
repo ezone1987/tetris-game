@@ -125,13 +125,14 @@ window.Tetromino = (() => {
 
     // ==================== 方块类 ====================
     class TetrominoPiece {
-        constructor(type) {
+        constructor(type, collisionChecker = null) {
             this.type = type;
             this.data = TETROMINOES[type];
             this.matrix = this._copyMatrix(this.data.shape);
             this.rotation = 0; // 当前旋转状态 (0-3)
             this.position = { x: this.data.spawnOffset.x, y: this.data.spawnOffset.y };
             this.color = this.data.color;
+            this.collisionChecker = collisionChecker;
         }
 
         /**
@@ -259,8 +260,13 @@ window.Tetromino = (() => {
                 this.position.y += kick.y;
 
                 // 检查新位置是否有效
-                const isValid = true; // 这里需要网格来检查，在game.js中实现
-                // 注意：实际的碰撞检测在游戏主逻辑中完成
+                let isValid;
+                if (this.collisionChecker) {
+                    isValid = this.collisionChecker(this);
+                } else {
+                    // 如果没有提供碰撞检测函数，默认为有效（向后兼容）
+                    isValid = true;
+                }
 
                 // 如果位置有效，返回成功
                 if (isValid) {
@@ -311,7 +317,7 @@ window.Tetromino = (() => {
          * @returns {TetrominoPiece} 克隆的方块
          */
         clone() {
-            const clone = new TetrominoPiece(this.type);
+            const clone = new TetrominoPiece(this.type, this.collisionChecker);
             clone.matrix = this._copyMatrix(this.matrix);
             clone.rotation = this.rotation;
             clone.position = { ...this.position };
@@ -321,8 +327,9 @@ window.Tetromino = (() => {
 
     // ==================== 方块工厂 ====================
     class TetrominoFactory {
-        constructor() {
+        constructor(collisionChecker = null) {
             this.bag = [];
+            this.collisionChecker = collisionChecker;
             this._refillBag();
         }
 
@@ -351,7 +358,7 @@ window.Tetromino = (() => {
             }
 
             const type = this.bag.shift();
-            return new TetrominoPiece(type);
+            return new TetrominoPiece(type, this.collisionChecker);
         }
 
         /**
