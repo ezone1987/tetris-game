@@ -134,6 +134,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // 显示开始界面
         showOverlay('俄罗斯方块', '准备好开始游戏了吗？', '开始游戏');
 
+        // 开发环境下运行自检
+        if (window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')) {
+            setTimeout(() => {
+                console.log('运行多行清除自检...');
+                testLineClear();
+            }, 500);
+        }
+
         // console.log('游戏初始化完成');
     }
 
@@ -361,12 +369,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function clearLines() {
         let linesCleared = 0;
-        const rowsToClear = [];
+        const rowsToClear = new Set();
 
         // 找出需要消除的行
         for (let y = CONFIG.GRID_HEIGHT - 1; y >= 0; y--) {
             if (gameState.grid[y].every(cell => cell !== 0)) {
-                rowsToClear.push(y);
+                rowsToClear.add(y);
                 linesCleared++;
             }
         }
@@ -375,19 +383,27 @@ document.addEventListener('DOMContentLoaded', () => {
             // 播放消除音效
             AudioManager.playLineClear(linesCleared);
 
-            // 消除行（从下往上）
-            rowsToClear.sort((a, b) => b - a); // 降序排列
-            for (const row of rowsToClear) {
-                gameState.grid.splice(row, 1);
-                gameState.grid.unshift(Array(CONFIG.GRID_WIDTH).fill(0));
+            // 消除行 - 创建新网格，只保留不完整的行
+            const newGrid = [];
+
+            // 从底部开始，添加不完整的行
+            for (let y = CONFIG.GRID_HEIGHT - 1; y >= 0; y--) {
+                if (!rowsToClear.has(y)) {
+                    newGrid.unshift(gameState.grid[y]);
+                }
             }
 
-            // 更新连击计数
-            if (linesCleared > 0) {
-                gameState.combo++;
-            } else {
-                gameState.combo = 0;
+            // 在顶部填充空行
+            const emptyRowsNeeded = CONFIG.GRID_HEIGHT - newGrid.length;
+            for (let i = 0; i < emptyRowsNeeded; i++) {
+                newGrid.unshift(Array(CONFIG.GRID_WIDTH).fill(0));
             }
+
+            // 更新网格
+            gameState.grid = newGrid;
+
+            // 更新连击计数
+            gameState.combo++;
 
             // 更新消除行数
             gameState.lines += linesCleared;
@@ -984,6 +1000,57 @@ document.addEventListener('DOMContentLoaded', () => {
     // if (window.location.href.includes('localhost')) {
     //     setTimeout(() => testWallKick(), 1000);
     // }
+
+    // 多行清除测试函数
+    window.testLineClear = function() {
+        console.log('=== 多行清除测试 ===');
+
+        // 保存原始网格
+        const originalGrid = gameState.grid;
+
+        // 创建一个测试网格：底部4行满，其他行空
+        const testGrid = Array(CONFIG.GRID_HEIGHT).fill().map(() => Array(CONFIG.GRID_WIDTH).fill(0));
+        for (let y = CONFIG.GRID_HEIGHT - 4; y < CONFIG.GRID_HEIGHT; y++) {
+            testGrid[y] = Array(CONFIG.GRID_WIDTH).fill(1); // 填充为方块类型1
+        }
+
+        // 设置测试网格
+        gameState.grid = testGrid;
+
+        console.log('测试前网格状态:');
+        console.log('底部4行应该是满的');
+
+        // 调用清除函数
+        const linesCleared = clearLines();
+
+        console.log(`清除行数: ${linesCleared}`);
+        console.log('预期: 4');
+
+        // 检查结果
+        let remainingFullRows = 0;
+        for (let y = 0; y < CONFIG.GRID_HEIGHT; y++) {
+            if (gameState.grid[y].every(cell => cell !== 0)) {
+                remainingFullRows++;
+            }
+        }
+
+        console.log(`剩余满行数: ${remainingFullRows}`);
+        console.log(`预期: 0`);
+
+        if (linesCleared === 4 && remainingFullRows === 0) {
+            console.log('✅ 多行清除功能正常');
+        } else {
+            console.log('❌ 多行清除功能异常');
+        }
+
+        // 恢复原始网格
+        gameState.grid = originalGrid;
+
+        // 重新绘制
+        draw();
+
+        return linesCleared;
+    };
 
     init().catch(error => console.error('游戏初始化失败:', error));
 
